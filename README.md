@@ -3,7 +3,7 @@
 ## 📌 Visão Geral
 Este projeto tem como objetivo explorar e analisar o conjunto de dados do FIFA 19, extraído de um banco de dados público. Através de técnicas de **Análise de Dados** e **Feature Engineering**, buscamos insights relevantes sobre jogadores, clubes e ligas, preparando os dados para futuras aplicações de **Machine Learning**.
 
-A motivação do uso deste dataset, foi devido ao meu primeiro artigo no Medium[Qualquer semelhança é mera coincidência: SQL e Pandas.
+A motivação do uso deste dataset, foi devido ao meu primeiro artigo no Medium: [Qualquer semelhança é mera coincidência: SQL e Pandas.
 ](https://medium.com/@datapalacio/qualquer-semelhan%C3%A7a-%C3%A9-mera-coincid%C3%AAncia-sql-e-pandas-5b33c1551a23) A partir disso, utilizei algumas consultas semelhantes entre SQL e a bibloteca Pandas.
 
 ---
@@ -25,10 +25,10 @@ O conjunto de dados utilizado neste projeto é uma extração do FIFA 19, conten
 ## 📂 Estrutura do Projeto
 ```
 📁 fifa19-analysis/
-│── 📄 README.md        # Descrição clara do projeto  
 │── 📂 data/            # Dados utilizados ou link para download  
 │── 📂 notebook/        # Jupyter Notebooks organizados  
 │── 📂 reports/         # Relatórios ou imagens de gráficos  
+│── 📄 README.md        # Descrição clara do projeto  
 ```
 
 ---
@@ -37,16 +37,45 @@ O conjunto de dados utilizado neste projeto é uma extração do FIFA 19, conten
 Antes de realizar qualquer análise, foi necessário um processo de **limpeza e tratamento dos dados** para garantir sua qualidade. As principais ações realizadas incluem:
 - Exclusão de algumas colunas que era desnecessárias.
 - Remoção dos símbolos monetários nas colunas `Wage`, `Value` e `Release Clause`, pois iriamos realizar análise estatistica com elas. 
+```python
+# Removendo simbolos monetários e convertendo para float
+
+def remover_simbolos(valor):
+    if isinstance(valor, float):
+        return valor
+    
+    valor = valor.replace('€', '')
+
+    if 'M' in valor:
+        return float(valor.replace('M', '')) * 1000000
+    if 'K' in valor:
+        return float(valor.replace('K', '')) * 1000
+
+    return float(valor)
+```
 
 ### 🛠 Tratamento de dados ausentes
 - Colunas com valores ausentes foram analisadas para decidir a melhor estratégia de imputação (remoção ou substituição com valores padrão).
 - Para atributos categóricos, foi aplicada **imputação com valores mais frequentes**.
+
+```python
+# Contando a frequência de cada número de camisa por posição  
+top_numbers = df_filtered.groupby('Position')['Jersey Number'].agg(lambda x: x.mode()[0]).reset_index()  
+```
 
 ### 🔄 Normalização dos dados
 - Colunas contendo valores monetários (como `Wage`, `Value` e `Release Clause`) foram convertidas de **strings para valores numéricos** para realizarmos calculos com elas, removendo símbolos como `€`, `K` e `M`.
 
 ### 🔢 Criação de novas variáveis (Feature Engineering)
 - Adicionamos uma coluna `Champions` para indicar se o jogador nasceu em um país que já venceu a Copa do Mundo (Brasil, Alemanha, Itália, etc.), com encoding **0 (não) e 1 (sim)**.
+```python
+# Lista de países campeões do mundo
+world_cup_winners = {"Brazil", "Germany", "Italy", "Argentina", "Uruguay", "France", "Spain", "England"}
+
+# Criando a coluna "Champions" com encoding (1 para campeões, 0 para os demais)
+fifa["Champions"] = fifa["Nationality"].apply(lambda x: 1 if x in world_cup_winners else 0)
+fifa['Champions'] 
+```
 
 ---
 
@@ -55,13 +84,36 @@ Antes de realizar qualquer análise, foi necessário um processo de **limpeza e 
 ## 📌 Perguntas Analisadas  
 Durante a análise exploratória, buscamos responder algumas perguntas-chave:  
 
-✅ **Quais são os ![reports/barplot_player_valioso.png](jogadores mais valiosos) e quais fatores influenciam seu valor de mercado?**  
-✅ **Como a idade impacta o desempenho (Overall) dos jogadores ao longo dos anos?**  
-✅ **Quais clubes e ligas possuem os jogadores mais valiosos?**  
-✅ **Existe um padrão nas numerações das camisas por posição?**  
-✅ **Jogadores de países campeões da Copa do Mundo têm um Overall médio maior?**  
-✅ **O [reports/barplot_salario_posicao.png](salário dos jogadores) varia significativamente por posição?**  
+✅ **Quais são os jogadores mais valiosos do jogo?**  
 
+![](reports/barplot_player_valioso.png)
+
+✅ **Como a idade impacta o desempenho (Overall) dos jogadores ao longo dos anos?**  
+
+![](reports\overall_and_age.png)
+
+✅ **Quais clubes e ligas possuem os jogadores mais valiosos?** 
+
+![](reports\barplot_total_liga.png)
+
+✅ **Existe um padrão nas numerações das camisas por posição?**  
+```python
+# Frequencia de número de camisa por posição 
+
+# Selecionando apenas as colunas relevantes e remover valores ausentes  
+df_filtered = fifa[['Jersey Number', 'Position']].dropna()  
+
+# Contando a frequência de cada número de camisa por posição  
+top_numbers = df_filtered.groupby('Position')['Jersey Number'].agg(lambda x: x.mode()[0]).reset_index()  
+top_numbers.rename(columns={'Jersey Number': 'Top Jersey Number'}, inplace=True) # Renomeando a coluna para deixar mais claro
+
+# Agrupando por 'Position' e 'Jersey Number' e contar o número de valores  
+counts = df_filtered.groupby(['Position', 'Jersey Number']).size().reset_index(name='Count')  
+```
+
+✅ **O salário dos jogadores varia significativamente por posição?**  
+
+![](reports/barplot_salario_posicao.png)
 
 ---
 
