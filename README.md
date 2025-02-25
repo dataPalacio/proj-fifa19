@@ -90,11 +90,11 @@ Durante a análise exploratória, buscamos responder algumas perguntas-chave:
 
 ✅ **Como a idade impacta o desempenho (Overall) dos jogadores ao longo dos anos?**  
 
-![](reports\overall_and_age.png)
+![](reports/overall_and_age.png)
 
 ✅ **Quais clubes e ligas possuem os jogadores mais valiosos?** 
 
-![](reports\barplot_total_liga.png)
+<img src="reports\barplot_total_liga.png">
 
 ✅ **Existe um padrão nas numerações das camisas por posição?**  
 ```python
