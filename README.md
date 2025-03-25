@@ -118,7 +118,7 @@ counts = df_filtered.groupby(['Position', 'Jersey Number']).size().reset_index(n
 ---
 
 ## 📌 Conclusão
-Este projeto fornece uma visão aprofundada dos jogadores do FIFA 19, utilizando técnicas de **limpeza de dados, engenharia de atributos e análise exploratória**. Além disso, os dados foram organizados para **previsões futuras com Machine Learning**, garantindo que estejam no formato ideal para modelos de aprendizado supervisionado e não supervisionado.
+Este projeto oferece uma análise detalhada dos dados do FIFA 19, utilizando técnicas de **limpeza de dados, engenharia de atributos e análise exploratória**. Através dessas técnicas, conseguimos extrair insights valiosos sobre jogadores, clubes e ligas, preparando os dados para futuras aplicações de **Machine Learning**.
 
 📢 **Próximos Passos:**
 - Aplicar modelos de Machine Learning para prever o valor de mercado dos jogadores.
